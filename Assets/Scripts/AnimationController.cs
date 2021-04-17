@@ -9,6 +9,7 @@ public class AnimationController : MonoBehaviour
     public Sprite _idleSprite;
     public Sprite _walkSprite;
     public Sprite _jumpSprite;
+    public GameObject _attackTrail;
     
     private Tween _bobAnimation;
 
@@ -23,13 +24,27 @@ public class AnimationController : MonoBehaviour
         EnterIdleState();
     }
 
+    public void KillAnimations(bool winner, Vector2 trailFacing = default)
+    {
+        EnterJumpingState();
+        _bobAnimation.Kill();
+
+        if (!winner)
+        {
+            _attackTrail.transform.right = trailFacing;
+            _attackTrail.SetActive(true);
+            _mySpriteRenderer.DOColor(Color.white, 1f).SetEase(Ease.Linear);
+        }
+    }
+
+    // Called every frame with information from the CharacterController
     public void UpdateState(bool grounded, float horizontalV)
     {
-        if (!grounded && _state != State.Jumping)
+        if (!grounded && _state != State.Jumping) // Enter Jumping if in the air
         {
             EnterJumpingState();
         }
-        else if (grounded && _state == State.Jumping)
+        else if (grounded && _state == State.Jumping) // Exit Jumping if on the ground, pick appropriate Landing state
         {
             if (Mathf.Abs(horizontalV) > .1f)
             {
@@ -41,7 +56,7 @@ public class AnimationController : MonoBehaviour
             }
         }
 
-        if (Mathf.Abs(horizontalV) > .1f)
+        if (Mathf.Abs(horizontalV) > .1f) // If moving, enter Walk visuals, though details depend on whether the character is still landing
         {
             if (_state == State.Idle)
             {
@@ -58,7 +73,7 @@ public class AnimationController : MonoBehaviour
                 _state = State.MovingLanding;
             }
         }
-        else
+        else // No horizontal motion: enter Idle visuals
         {
             if (_state == State.Walking)
             {
@@ -82,6 +97,7 @@ public class AnimationController : MonoBehaviour
         _mySpriteRenderer.sprite = _idleSprite;
         transform.localScale = Vector3.one;
         _bobAnimation.Kill();
+        // These are programmatic animations called "Tweens". This one is set to scale the character down to .9, looping back and forth, with a nice rounded animation curve
         _bobAnimation = transform.DOScaleY(.9f, .75f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutQuad);
 
         _state = State.Idle;
@@ -91,7 +107,7 @@ public class AnimationController : MonoBehaviour
     {
         _mySpriteRenderer.sprite = _walkSprite;
         transform.localScale = Vector3.one;
-        _bobAnimation.Kill();
+        _bobAnimation.Kill(); // The previous animation should be stopped before we create a new one
         _bobAnimation = transform.DOScaleY(.9f, .25f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutQuad);
 
         _state = State.Walking;

@@ -1,9 +1,11 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class CharacterController : MonoBehaviour
 {
     public AnimationController _animationController;
+    public float _runSpeed = 40f;
     public float _jumpForce = 400f;                          // Amount of instantaneous force added when the player jumps.
     [Range(0, .3f)] public float _movementSmoothing = .05f;  // How much to smooth out the movement
     public bool _airControl = false;                         // Whether or not a player can steer while jumping;
@@ -11,6 +13,7 @@ public class CharacterController : MonoBehaviour
     public Transform _groundCheck;                           // A position marking where to check if the player is grounded.
     public float _topOfScreen = 10f;                         // Y-position of top of screen to spawn character if it falls
     public float _bottomOfScreen = -10f;                     // Y-position of bottom of screen to detect that the character has fallen
+    public float _victoryTravelDist = 2f;
     public bool _facingRight = true;                         // For determining which way the player is currently facing.
 
     private const float GROUNDED_RADIUS = .2f; // Radius of the overlap circle to determine if grounded
@@ -25,15 +28,40 @@ public class CharacterController : MonoBehaviour
         _myRigidbody2D = GetComponent<Rigidbody2D>();
     }
     
+    public void ShowEndgameEffect(bool winner, Vector2 otherCharacterPosition)
+    {
+        Vector2 toOtherCharacter = (otherCharacterPosition - (Vector2)transform.position).normalized;
+        if (winner)
+        {
+            transform.DOMove((Vector2)transform.position + toOtherCharacter * _victoryTravelDist, .2f);
+            _animationController.KillAnimations(true);
+        }
+        else
+        {
+            _animationController.KillAnimations(false, -toOtherCharacter);
+        }
+        DeactivateCharacter();
+    }
+
+    private void DeactivateCharacter()
+    {
+        _myRigidbody2D.velocity = Vector2.zero;
+        _myRigidbody2D.isKinematic = true;
+        enabled = false;
+    }
+
     /// <summary>
     /// Must be called in FixedUpdate()
     /// </summary>
     public void Move(float move, bool jump)
     {
-        CheckIfGrounded();
-        ApplyHorizontalMovement(move);
-        ApplyVerticalMovement(jump);
-        _animationController.UpdateState(_grounded, _myRigidbody2D.velocity.x);
+        if (enabled)
+        {
+            CheckIfGrounded();
+            ApplyHorizontalMovement(move * _runSpeed);
+            ApplyVerticalMovement(jump);
+            _animationController.UpdateState(_grounded, _myRigidbody2D.velocity.x);
+        }
     }
 
     void CheckIfGrounded()

@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public CharacterController character;
-    public float runSpeed = 40f;
 
     public string _playerIdentifier = "P1";
 
@@ -15,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame, and is used for input and rendering
     void Update()
     {
-        _horizontalMove = Input.GetAxisRaw("Horizontal_" + _playerIdentifier) * runSpeed; // Store input from player controllers
+        _horizontalMove = Input.GetAxisRaw("Horizontal_" + _playerIdentifier); // Store input from player controllers
 
         if (Input.GetButtonDown("Jump_" + _playerIdentifier))
         {

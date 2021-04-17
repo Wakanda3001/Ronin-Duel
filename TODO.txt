@@ -1,0 +1,6 @@
+TODO for Ronin Duel:
+1. Add animations to ronin
+2. Add triggers for win condition
+3. Add timer + background color swap
+4. Add visual effect on ronin for "active" state
+5. Add sound

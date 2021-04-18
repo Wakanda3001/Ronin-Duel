@@ -60,7 +60,7 @@ public class CharacterController : MonoBehaviour
             CheckIfGrounded();
             ApplyHorizontalMovement(move * _runSpeed);
             ApplyVerticalMovement(jump);
-            _animationController.UpdateState(_grounded, _myRigidbody2D.velocity.x);
+            _animationController.UpdateState(_grounded, _myRigidbody2D.velocity);
         }
     }
 

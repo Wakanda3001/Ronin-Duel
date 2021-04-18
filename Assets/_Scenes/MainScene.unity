@@ -182,8 +182,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: BLUE WINS
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e93c89e0940ee174e8ebb969494ae105, type: 2}
+  m_sharedMaterial: {fileID: 2112369691537410611, guid: e93c89e0940ee174e8ebb969494ae105, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -207,8 +207,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 38
+  m_fontSizeBase: 38
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -270,7 +270,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 2112369691537410611, guid: e93c89e0940ee174e8ebb969494ae105, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -341,6 +341,7 @@ MonoBehaviour:
   _idleSprite: {fileID: 21300000, guid: 92533cf7f48b1f84a86d89cd078ed4fb, type: 3}
   _walkSprite: {fileID: 21300000, guid: 3b21585951269f44aa10a1fb5d66fa36, type: 3}
   _jumpSprite: {fileID: 21300000, guid: 1ffb2035c0f5fb5498654306b7a9f8f2, type: 3}
+  _fallSprite: {fileID: 21300000, guid: 3849d7571e4002b4283b057c1b4bcdee, type: 3}
   _attackTrail: {fileID: 1482369405}
 --- !u!21 &437203626
 Material:
@@ -745,8 +746,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: RED WINS
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e93c89e0940ee174e8ebb969494ae105, type: 2}
+  m_sharedMaterial: {fileID: 2112369691537410611, guid: e93c89e0940ee174e8ebb969494ae105, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -770,8 +771,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 38
+  m_fontSizeBase: 38
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -833,7 +834,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 2112369691537410611, guid: e93c89e0940ee174e8ebb969494ae105, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1171,6 +1172,7 @@ MonoBehaviour:
   _idleSprite: {fileID: 21300000, guid: 92533cf7f48b1f84a86d89cd078ed4fb, type: 3}
   _walkSprite: {fileID: 21300000, guid: 3b21585951269f44aa10a1fb5d66fa36, type: 3}
   _jumpSprite: {fileID: 21300000, guid: 1ffb2035c0f5fb5498654306b7a9f8f2, type: 3}
+  _fallSprite: {fileID: 21300000, guid: 3849d7571e4002b4283b057c1b4bcdee, type: 3}
   _attackTrail: {fileID: 1045988828}
 --- !u!21 &1256447068
 Material:

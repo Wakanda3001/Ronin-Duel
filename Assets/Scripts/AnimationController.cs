@@ -9,6 +9,7 @@ public class AnimationController : MonoBehaviour
     public Sprite _idleSprite;
     public Sprite _walkSprite;
     public Sprite _jumpSprite;
+    public Sprite _fallSprite;
     public GameObject _attackTrail;
     
     private Tween _bobAnimation;
@@ -26,28 +27,41 @@ public class AnimationController : MonoBehaviour
 
     public void KillAnimations(bool winner, Vector2 trailFacing = default)
     {
-        EnterJumpingState();
         _bobAnimation.Kill();
+        _mySpriteRenderer.sprite = _fallSprite;
 
         if (!winner)
         {
             _attackTrail.transform.right = trailFacing;
             _attackTrail.SetActive(true);
-            _mySpriteRenderer.DOColor(Color.white, 1f).SetEase(Ease.Linear);
-            _mySpriteRenderer.transform.DOScaleY(0f, 3f).SetEase(Ease.InQuad);
+            Sequence s = DOTween.Sequence();
+            s.Append(_mySpriteRenderer.transform.DOScaleY(0f, 3f).SetEase(Ease.InQuad));
+            s.Join(_mySpriteRenderer.DOColor(Color.white, 1f).SetEase(Ease.Linear));
+            s.Insert(1f, _mySpriteRenderer.DOColor(Color.clear, 1f).SetEase(Ease.Linear));
         }
     }
 
     // Called every frame with information from the CharacterController
-    public void UpdateState(bool grounded, float horizontalV)
+    public void UpdateState(bool grounded, Vector2 velocity)
     {
-        if (!grounded && _state != State.Jumping) // Enter Jumping if in the air
+        if (!grounded)
         {
-            EnterJumpingState();
+            if (_state != State.Jumping) // Enter Jumping if in the air)
+            {
+                EnterJumpingState();
+            }
+            if (velocity.y >= 0)
+            {
+                _mySpriteRenderer.sprite = _jumpSprite;
+            }
+            else
+            {
+                _mySpriteRenderer.sprite = _fallSprite;
+            }
         }
         else if (grounded && _state == State.Jumping) // Exit Jumping if on the ground, pick appropriate Landing state
         {
-            if (Mathf.Abs(horizontalV) > .1f)
+            if (Mathf.Abs(velocity.x) > .1f)
             {
                 EnterMovingLandingState();
             }
@@ -57,7 +71,7 @@ public class AnimationController : MonoBehaviour
             }
         }
 
-        if (Mathf.Abs(horizontalV) > .1f) // If moving, enter Walk visuals, though details depend on whether the character is still landing
+        if (Mathf.Abs(velocity.x) > .1f) // If moving, enter Walk visuals, though details depend on whether the character is still landing
         {
             if (_state == State.Idle)
             {

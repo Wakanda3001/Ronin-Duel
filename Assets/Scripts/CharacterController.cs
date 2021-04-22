@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -16,8 +17,12 @@ public class CharacterController : MonoBehaviour
     public float _victoryTravelDist = 2f;
     public bool _facingRight = true;                         // For determining which way the player is currently facing.
 
-    private const float GROUNDED_RADIUS = .2f; // Radius of the overlap circle to determine if grounded
+    private const float WALL_RADIUS = 0.4f;
+    [SerializeField]
+    private bool _sliding = false;
+    private int _slideDirection = 1;
 
+    private const float GROUNDED_RADIUS = .02f; // Radius of the overlap circle to determine if grounded
     private bool _grounded;            // Whether or not the player is grounded.
     private Rigidbody2D _myRigidbody2D;
     private Vector3 _velocity = Vector3.zero;
@@ -27,7 +32,7 @@ public class CharacterController : MonoBehaviour
     {
         _myRigidbody2D = GetComponent<Rigidbody2D>();
     }
-    
+
     public void ShowEndgameEffect(bool winner, Vector2 otherCharacterPosition)
     {
         Vector2 toOtherCharacter = (otherCharacterPosition - (Vector2)transform.position).normalized;
@@ -67,7 +72,14 @@ public class CharacterController : MonoBehaviour
     void CheckIfGrounded()
     {
         // The player is grounded if a circlecast at the groundcheck position hits anything designated as ground
+        bool prevSliding = false;
+        //prevSliding variable records which way character was facing when entering wall, allows for turning away from wall slightly before jump
+        if (_sliding)
+        {
+            prevSliding = true;
+        }
         _grounded = false;
+        _sliding = false;
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, GROUNDED_RADIUS, _whatIsGround);
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -75,6 +87,29 @@ public class CharacterController : MonoBehaviour
             {
                 _grounded = true;
                 break;
+            }
+        }
+        if (!_grounded)
+        {
+            colliders = Physics2D.OverlapCircleAll(transform.position, WALL_RADIUS, _whatIsGround);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i].gameObject != gameObject)
+                {
+                    _sliding = true;
+                    if (!prevSliding)
+                    {
+                        if (_facingRight)
+                        {
+                            _slideDirection = -1;
+                        }
+                        else
+                        {
+                            _slideDirection = 1;
+                        }
+                    }
+                    break;
+                }
             }
         }
     }
@@ -117,7 +152,13 @@ public class CharacterController : MonoBehaviour
         {
             // Add a vertical force to the player.
             _grounded = false;
-            _myRigidbody2D.AddForce(new Vector2(0f, _jumpForce));
+            _myRigidbody2D.velocity = new Vector2(0f, 15f); //I changed the AddForce because it could get ridiculous with wall jumps. Could be worked around, but for now rb.velocity works fine.
+        }
+
+        else if (_sliding && jump)
+        {
+            float wallJump = 20f;
+            _myRigidbody2D.velocity = new Vector2(wallJump * _slideDirection, 15f);
         }
     }
 

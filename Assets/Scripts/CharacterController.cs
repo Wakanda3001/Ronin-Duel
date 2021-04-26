@@ -17,12 +17,12 @@ public class CharacterController : MonoBehaviour
     public float _victoryTravelDist = 2f;
     public bool _facingRight = true;                         // For determining which way the player is currently facing.
 
-    private const float WALL_RADIUS = 0.4f;
-    [SerializeField]
+    private const float WALL_RADIUS = 0.3f;
     private bool _sliding = false;
     private int _slideDirection = 1;
+    public float wallJumpDist = 10f;
 
-    private const float GROUNDED_RADIUS = .02f; // Radius of the overlap circle to determine if grounded
+    private const float GROUNDED_RADIUS = .03f; // Radius of the overlap circle to determine if grounded
     private bool _grounded;            // Whether or not the player is grounded.
     private Rigidbody2D _myRigidbody2D;
     private Vector3 _velocity = Vector3.zero;
@@ -157,8 +157,7 @@ public class CharacterController : MonoBehaviour
 
         else if (_sliding && jump)
         {
-            float wallJump = 20f;
-            _myRigidbody2D.velocity = new Vector2(wallJump * _slideDirection, 15f);
+            _myRigidbody2D.velocity = new Vector2(wallJumpDist * _slideDirection, 15f);
         }
     }
 

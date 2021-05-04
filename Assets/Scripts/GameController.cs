@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
+using UnityEditor.Animations;
+using UnityEditor;
 
 public class GameController : MonoBehaviour
 {
@@ -22,20 +24,32 @@ public class GameController : MonoBehaviour
     public AudioClip _gameOverSound;
     public PlayerIndex _currentPlayer = PlayerIndex.One;
     public float _timePerActivePlayer = 2f; // In seconds
+
+    public GameObject spawnpointParent; //Gameobject spawnpoints are children of
+    private GameObject oldPos;
+    public GameObject switcher;
     
     private float _gameTimer;
     private bool _gameOngoing;
+    private List<GameObject> spawnpoints = new List<GameObject>();
 
     // Used to initialize the script
     void Start()
     {
         _gameTimer = _timePerActivePlayer;
         _gameOngoing = true;
+
+
+        foreach(Transform child in spawnpointParent.transform)
+        {
+            spawnpoints.Add(child.gameObject);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        /*
         if (_gameOngoing)
         {
             _gameTimer -= Time.deltaTime;
@@ -44,7 +58,47 @@ public class GameController : MonoBehaviour
                 SwitchActivePlayer();
                 _gameTimer = _timePerActivePlayer;
             }
+        } */
+    }
+
+    public bool IsGameObjectActive(GameObject gameObject)
+    {
+        bool player1 = false;
+        if (gameObject.GetComponent<CharacterController>() == _playerOne)
+        {
+            player1 = true;
         }
+        if (_currentPlayer == PlayerIndex.One && player1)
+        {
+            return true;
+        }
+        else if(_currentPlayer == PlayerIndex.Two && !player1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void SpawnSwitcher(GameObject whoActivated)
+    {
+        if (IsGameObjectActive(whoActivated))
+        {
+            return;
+        }
+        GameObject newPos = spawnpoints[Random.Range(0, spawnpoints.Count)];
+        while (newPos == oldPos)
+        {
+            newPos = spawnpoints[Random.Range(0, spawnpoints.Count)];
+        }
+        oldPos = newPos;
+
+        switcher.transform.position = newPos.transform.position;
+
+        SwitchActivePlayer();
+        
     }
 
     public void OnPlayersTouched()
@@ -72,6 +126,8 @@ public class GameController : MonoBehaviour
     {
         if (_currentPlayer == PlayerIndex.One)
         {
+            switcher.GetComponent<SpriteRenderer>().color = Color.blue;
+            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("Glow Color", Color.blue);
             _mainCamera.backgroundColor = _playerTwoBackground;
             _currentPlayer = PlayerIndex.Two;
             _audioPlayer.Stop();
@@ -79,6 +135,8 @@ public class GameController : MonoBehaviour
         }
         else
         {
+            switcher.GetComponent<SpriteRenderer>().color = Color.red;
+            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("Glow Color", Color.red);
             _mainCamera.backgroundColor = _playerOneBackground;
             _currentPlayer = PlayerIndex.One;
             _audioPlayer.Stop();

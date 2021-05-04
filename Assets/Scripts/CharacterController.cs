@@ -21,6 +21,8 @@ public class CharacterController : MonoBehaviour
     private bool _sliding = false;
     private int _slideDirection = 1;
     public float wallJumpDist = 10f;
+    [SerializeField]
+    private int lastGrounded = 0;
 
     private const float GROUNDED_RADIUS = .03f; // Radius of the overlap circle to determine if grounded
     private bool _grounded;            // Whether or not the player is grounded.
@@ -71,6 +73,10 @@ public class CharacterController : MonoBehaviour
 
     void CheckIfGrounded()
     {
+        if (lastGrounded > 0)
+        {
+            lastGrounded--;
+        }
         // The player is grounded if a circlecast at the groundcheck position hits anything designated as ground
         bool prevSliding = false;
         //prevSliding variable records which way character was facing when entering wall, allows for turning away from wall slightly before jump
@@ -86,12 +92,13 @@ public class CharacterController : MonoBehaviour
             if (colliders[i].gameObject != gameObject)
             {
                 _grounded = true;
+                lastGrounded = 5;
                 break;
             }
         }
         if (!_grounded)
         {
-            colliders = Physics2D.OverlapCircleAll(transform.position, WALL_RADIUS, _whatIsGround);
+            colliders = Physics2D.OverlapAreaAll(new Vector2(transform.position.x - 0.2f, transform.position.y - 0.1f), new Vector2(transform.position.x + 0.2f, transform.position.y + 0.1f), _whatIsGround);
             for (int i = 0; i < colliders.Length; i++)
             {
                 if (colliders[i].gameObject != gameObject)
@@ -148,7 +155,7 @@ public class CharacterController : MonoBehaviour
         }
 
         // If the player should jump...
-        if (_grounded && jump)
+        if ((_grounded || lastGrounded > 1) && jump)
         {
             // Add a vertical force to the player.
             _grounded = false;
@@ -171,4 +178,5 @@ public class CharacterController : MonoBehaviour
         theScale.x *= -1;
         transform.localScale = theScale;
     }
+
 }

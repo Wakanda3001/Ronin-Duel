@@ -28,6 +28,7 @@ public class GameController : MonoBehaviour
     public GameObject spawnpointParent; //Gameobject spawnpoints are children of
     private GameObject oldPos;
     public GameObject switcher;
+    public GameObject arrow;
     
     private float _gameTimer;
     private bool _gameOngoing;
@@ -127,6 +128,7 @@ public class GameController : MonoBehaviour
         if (_currentPlayer == PlayerIndex.One)
         {
             switcher.GetComponent<SpriteRenderer>().color = Color.blue;
+            arrow.GetComponent<SpriteRenderer>().color = Color.blue;
             switcher.GetComponent<Renderer>().sharedMaterial.SetColor("Glow Color", Color.blue);
             _mainCamera.backgroundColor = _playerTwoBackground;
             _currentPlayer = PlayerIndex.Two;
@@ -136,6 +138,7 @@ public class GameController : MonoBehaviour
         else
         {
             switcher.GetComponent<SpriteRenderer>().color = Color.red;
+            arrow.GetComponent<SpriteRenderer>().color = Color.red;
             switcher.GetComponent<Renderer>().sharedMaterial.SetColor("Glow Color", Color.red);
             _mainCamera.backgroundColor = _playerOneBackground;
             _currentPlayer = PlayerIndex.One;

@@ -14,6 +14,8 @@ public class Arrow : MonoBehaviour
 
     public LayerMask correctLayer;
 
+    public float spacing = 0.5f;
+
     void Update()
     {  
         Vector2 upperLeft = new Vector2(0, Screen.height);
@@ -25,6 +27,11 @@ public class Arrow : MonoBehaviour
         upperRight = Camera.main.ScreenToWorldPoint(upperRight);
         lowerLeft = Camera.main.ScreenToWorldPoint(lowerLeft);
         lowerRight = Camera.main.ScreenToWorldPoint(lowerRight);
+
+        upperLeft = new Vector2(upperLeft.x+spacing, upperLeft.y-spacing);
+        upperRight = new Vector2(upperRight.x-spacing, upperRight.y-spacing);
+        lowerLeft = new Vector2(lowerLeft.x+spacing, lowerLeft.y+spacing);
+        lowerRight = new Vector2(lowerRight.x-spacing, lowerRight.y+spacing);
 
         left.SetPoints(new List<Vector2> { upperLeft, lowerLeft });
         right.SetPoints(new List<Vector2> { upperRight, lowerRight });
@@ -39,6 +46,11 @@ public class Arrow : MonoBehaviour
         } else
         {
             arrow.transform.position = hit.point;
+            Vector3 diff = switcher.transform.position - arrow.transform.position;
+            diff.Normalize();
+
+            float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+            arrow.transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
             arrow.SetActive(true);
         }
     }

@@ -14,7 +14,7 @@ public class Arrow : MonoBehaviour
 
     public LayerMask correctLayer;
 
-    public float spacing = 0.5f;
+    public float spacing = 0.25f;
 
     void Update()
     {  

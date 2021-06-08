@@ -6,9 +6,9 @@ using TMPro;
 using UnityEditor.Animations;
 using UnityEditor;
 
+public enum PlayerIndex { One, Two }
 public class GameController : MonoBehaviour
 {
-    public enum PlayerIndex { One, Two }
 
     public Camera _mainCamera;
     public GameObject _platformContainer;
@@ -45,6 +45,9 @@ public class GameController : MonoBehaviour
         {
             spawnpoints.Add(child.gameObject);
         }
+
+        SpawnSwitcher(PlayerIndex.One);
+
     }
 
     // Update is called once per frame
@@ -62,30 +65,9 @@ public class GameController : MonoBehaviour
         } */
     }
 
-    public bool IsGameObjectActive(GameObject gameObject)
+    public void SpawnSwitcher(PlayerIndex activator)
     {
-        bool player1 = false;
-        if (gameObject.GetComponent<CharacterController>() == _playerOne)
-        {
-            player1 = true;
-        }
-        if (_currentPlayer == PlayerIndex.One && player1)
-        {
-            return true;
-        }
-        else if(_currentPlayer == PlayerIndex.Two && !player1)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public void SpawnSwitcher(GameObject whoActivated)
-    {
-        if (IsGameObjectActive(whoActivated))
+        if(activator == _currentPlayer)
         {
             return;
         }

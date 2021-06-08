@@ -8,7 +8,7 @@ public class CharacterController : MonoBehaviour
     public AnimationController _animationController;
     public float _runSpeed = 40f;
     public float _jumpForce = 400f;                          // Amount of instantaneous force added when the player jumps.
-    [Range(0, .3f)] public float _movementSmoothing = .05f;  // How much to smooth out the movement
+    [Range(0, .3f)] public float _movementSmoothing = 0.5f;  // How much to smooth out the movement
     public bool _airControl = false;                         // Whether or not a player can steer while jumping;
     public LayerMask _whatIsGround;                          // A set of Physics Layers determining what is ground to the character
     public Transform _groundCheck;                           // A position marking where to check if the player is grounded.
@@ -131,6 +131,7 @@ public class CharacterController : MonoBehaviour
             Vector3 targetVelocity = new Vector2(move * 10f, _myRigidbody2D.velocity.y);
             // And then smoothing it out and applying it to the character
             _myRigidbody2D.velocity = Vector3.SmoothDamp(_myRigidbody2D.velocity, targetVelocity, ref _velocity, _movementSmoothing);
+            
 
             // If the input is moving the player right and the player is facing left...
             if (move > 0 && !_facingRight)
@@ -161,6 +162,7 @@ public class CharacterController : MonoBehaviour
             // Add a vertical force to the player.
             _grounded = false;
             _myRigidbody2D.velocity = new Vector2(0f, 15f); //I changed the AddForce because it could get ridiculous with wall jumps. Could be worked around, but for now rb.velocity works fine.
+            //_myRigidbody2D.AddForce(new Vector2(0f, 800f));
         }
 
         else if (_sliding && jump)

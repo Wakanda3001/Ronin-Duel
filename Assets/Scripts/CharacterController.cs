@@ -19,7 +19,8 @@ public class CharacterController : MonoBehaviour
 
     private const float WALL_RADIUS = 0.3f;
     private bool _sliding = false;
-    private int _slideDirection = 1;
+    private enum SlideDirection {Right, Left};
+    private SlideDirection slideDirection;
     public float wallJumpDist = 10f;
     [SerializeField]
     private int lastGrounded = 0;
@@ -108,11 +109,11 @@ public class CharacterController : MonoBehaviour
                     {
                         if (_facingRight)
                         {
-                            _slideDirection = -1;
+                            slideDirection = SlideDirection.Right;
                         }
                         else
                         {
-                            _slideDirection = 1;
+                            slideDirection = SlideDirection.Left;
                         }
                     }
                     break;
@@ -164,7 +165,12 @@ public class CharacterController : MonoBehaviour
 
         else if (_sliding && jump)
         {
-            _myRigidbody2D.velocity = new Vector2(wallJumpDist * _slideDirection, 15f);
+            int slideNum = 1;
+            if (slideDirection == SlideDirection.Right)
+            {
+                slideNum = -1;
+            }
+            _myRigidbody2D.velocity = new Vector2(wallJumpDist * slideNum, 15f);
         }
     }
 

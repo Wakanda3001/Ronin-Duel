@@ -125,6 +125,8 @@ public class GameController : MonoBehaviour
 
     void SwitchActivePlayer()
     {
+
+        //switcher.GetComponent<SpriteRenderer>().color = _currentPlayer == PlayerIndex.One ? Color.blue : Color.red ; <= better & cooler
         if (_currentPlayer == PlayerIndex.One)
         {
             switcher.GetComponent<SpriteRenderer>().color = Color.blue;

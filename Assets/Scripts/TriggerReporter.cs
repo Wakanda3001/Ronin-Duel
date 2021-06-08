@@ -9,6 +9,9 @@ public class TriggerReporter : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        OnTriggerActivated?.Invoke();
+        if (collision.gameObject.transform.parent.GetComponent<CharacterController>())
+        {
+            OnTriggerActivated?.Invoke();
+        }
     }
 }

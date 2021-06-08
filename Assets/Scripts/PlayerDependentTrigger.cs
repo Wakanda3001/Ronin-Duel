@@ -11,6 +11,10 @@ public class PlayerDependentTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        OnTriggerActivated?.Invoke(collision.gameObject);
+        CharacterController possibleController = collision.gameObject.GetComponent<CharacterController>();
+        if(possibleController != null)
+        {
+            OnTriggerActivated?.Invoke(collision.gameObject); //Pass the controller playerindex
+        }
     }
 }

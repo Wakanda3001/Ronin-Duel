@@ -8,7 +8,7 @@ public class CharacterController : MonoBehaviour
     public AnimationController _animationController;
     public float _runSpeed = 40f;
     public float _jumpForce = 400f;                          // Amount of instantaneous force added when the player jumps.
-    [Range(0, .3f)] public float _movementSmoothing = 0.5f;  // How much to smooth out the movement
+    public float _movementSmoothing = 0.5f;  // How much to smooth out the movement
     public bool _airControl = false;                         // Whether or not a player can steer while jumping;
     public LayerMask _whatIsGround;                          // A set of Physics Layers determining what is ground to the character
     public Transform _groundCheck;                           // A position marking where to check if the player is grounded.
@@ -27,7 +27,16 @@ public class CharacterController : MonoBehaviour
     private const float GROUNDED_RADIUS = .03f; // Radius of the overlap circle to determine if grounded
     private bool _grounded;            // Whether or not the player is grounded.
     private Rigidbody2D _myRigidbody2D;
-    private Vector3 _velocity = Vector3.zero;
+    public Vector3 _velocity = Vector3.zero;
+
+    public float speed = 10f;
+    public Vector2 smoothedVelocity = Vector2.zero;
+    public Vector2 xVelocity = Vector2.zero;
+    public Vector2 bounceVelocity = Vector2.zero;
+    public Vector2 jumpVelocity = Vector2.zero;
+
+    public bool bouncing = false;
+
 
     // Used to initialize the script
     void Start()
@@ -65,9 +74,20 @@ public class CharacterController : MonoBehaviour
         if (enabled)
         {
             CheckIfGrounded();
-            ApplyHorizontalMovement(move * _runSpeed);
             ApplyVerticalMovement(jump);
+            ApplyHorizontalMovement(move * _runSpeed);
             _animationController.UpdateState(_grounded, _myRigidbody2D.velocity);
+
+            //_myRigidbody2D.velocity = new Vector2(smoothedVelocity.x, _myRigidbody2D.velocity.y) + bounceVelocity;
+            if (bounceVelocity != Vector2.zero)
+            {
+                _myRigidbody2D.velocity = bounceVelocity;
+            }
+            _myRigidbody2D.AddForce(xVelocity + jumpVelocity, ForceMode2D.Impulse);
+
+            jumpVelocity = Vector2.zero;
+            bounceVelocity = Vector2.zero;
+
         }
     }
 
@@ -92,6 +112,7 @@ public class CharacterController : MonoBehaviour
             if (colliders[i].gameObject != gameObject)
             {
                 _grounded = true;
+                bouncing = false;
                 lastGrounded = 5;
                 break;
             }
@@ -127,10 +148,26 @@ public class CharacterController : MonoBehaviour
         if (_grounded || _airControl)
         {
             // Move the character by finding the target velocity
-            Vector3 targetVelocity = new Vector2(move * 10f, _myRigidbody2D.velocity.y);
+            Vector3 targetVelocity = new Vector2(move * 10f, 0);
             // And then smoothing it out and applying it to the character
-            _myRigidbody2D.velocity = Vector3.SmoothDamp(_myRigidbody2D.velocity, targetVelocity, ref _velocity, _movementSmoothing);
-            
+            if (!bouncing)
+            {
+                smoothedVelocity = Vector3.SmoothDamp(_myRigidbody2D.velocity, targetVelocity, ref _velocity, _movementSmoothing);
+                xVelocity = new Vector2(-1 * _myRigidbody2D.velocity.x + smoothedVelocity.x, 0);
+            }
+            else
+            {
+                Vector2 bounceMove = targetVelocity;
+                if(_myRigidbody2D.velocity.x + targetVelocity.x < 4 && _myRigidbody2D.velocity.x + targetVelocity.x > -4)
+                {
+                    xVelocity = targetVelocity;
+                }
+                else
+                {
+                    xVelocity = Vector2.zero;
+                }
+            }
+
 
             // If the input is moving the player right and the player is facing left...
             if (move > 0 && !_facingRight)
@@ -160,7 +197,7 @@ public class CharacterController : MonoBehaviour
         {
             // Add a vertical force to the player.
             _grounded = false;
-            _myRigidbody2D.velocity = new Vector2(0f, 15f); //I changed the AddForce because it could get ridiculous with wall jumps. Could be worked around, but for now rb.velocity works fine.
+            jumpVelocity = new Vector2(0f, 15f); //I changed the AddForce because it could get ridiculous with wall jumps. Could be worked around, but for now rb.velocity works fine.
             //_myRigidbody2D.AddForce(new Vector2(0f, 800f));
         }
 

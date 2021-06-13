@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         character.Move(_horizontalMove * Time.fixedDeltaTime, _jump); // Send move commands to player character based on stored input
+        Rigidbody2D rigid = GetComponent<Rigidbody2D>();
         _jump = false;
     }
 }

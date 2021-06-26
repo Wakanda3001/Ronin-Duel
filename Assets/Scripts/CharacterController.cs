@@ -26,7 +26,7 @@ public class CharacterController : MonoBehaviour
 
     private const float GROUNDED_RADIUS = .03f; // Radius of the overlap circle to determine if grounded
     private bool _grounded;            // Whether or not the player is grounded.
-    private Rigidbody2D _myRigidbody2D;
+    public Rigidbody2D _myRigidbody2D;
     public Vector3 _velocity = Vector3.zero;
 
     public float speed = 10f;
@@ -56,6 +56,12 @@ public class CharacterController : MonoBehaviour
         {
             _animationController.KillAnimations(false, -toOtherCharacter);
         }
+        DeactivateCharacter();
+    }
+
+    public void NonMeleeEndgameEffect(bool winner)
+    {
+        _animationController.NonMeleeKill(winner);
         DeactivateCharacter();
     }
 

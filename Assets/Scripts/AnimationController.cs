@@ -13,15 +13,19 @@ public class AnimationController : MonoBehaviour
     public GameObject _attackTrail;
     
     private Tween _bobAnimation;
+    public Sequence playerFade;
 
     private enum State { Idle, Walking, Jumping, StillLanding, MovingLanding }
     private State _state;
 
     private bool _landingComplete;
 
+    public Color startColor;
+
     // Used to initialize the script
     void Start()
     {
+        startColor = _mySpriteRenderer.color;
         EnterIdleState();
     }
 
@@ -34,10 +38,24 @@ public class AnimationController : MonoBehaviour
         {
             _attackTrail.transform.right = trailFacing;
             _attackTrail.SetActive(true);
-            Sequence s = DOTween.Sequence();
-            s.Append(_mySpriteRenderer.transform.DOScaleY(0f, 3f).SetEase(Ease.InQuad));
-            s.Join(_mySpriteRenderer.DOColor(Color.white, 1f).SetEase(Ease.Linear));
-            s.Insert(1f, _mySpriteRenderer.DOColor(Color.clear, 1f).SetEase(Ease.Linear));
+            playerFade = DOTween.Sequence();
+            playerFade.Append(_mySpriteRenderer.transform.DOScaleY(0f, 3f).SetEase(Ease.InQuad));
+            playerFade.Join(_mySpriteRenderer.DOColor(Color.white, 1f).SetEase(Ease.Linear));
+            playerFade.Insert(1f, _mySpriteRenderer.DOColor(Color.clear, 1f).SetEase(Ease.Linear));
+        }
+    }
+
+    public void NonMeleeKill(bool winner)
+    {
+        _bobAnimation.Kill();
+        _mySpriteRenderer.sprite = _fallSprite;
+
+        if (!winner)
+        {
+            playerFade = DOTween.Sequence();
+            playerFade.Append(_mySpriteRenderer.transform.DOScaleY(0f, 3f).SetEase(Ease.InQuad));
+            playerFade.Join(_mySpriteRenderer.DOColor(Color.white, 1f).SetEase(Ease.Linear));
+            playerFade.Insert(1f, _mySpriteRenderer.DOColor(Color.clear, 1f).SetEase(Ease.Linear));
         }
     }
 

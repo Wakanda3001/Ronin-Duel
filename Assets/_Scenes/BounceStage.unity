@@ -1034,7 +1034,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72ec50627b3fc14469d6b5b776692c6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameController: {fileID: 0}
+  gameController: {fileID: 1928502096}
 --- !u!1 &331030525
 GameObject:
   m_ObjectHideFlags: 0
@@ -1896,8 +1896,8 @@ MonoBehaviour:
   player2: {fileID: 1323151108}
   cam: {fileID: 519420031}
   minSize: 5
-  smoothing: 0.01
-  zoomSmoothing: 0.01
+  smoothing: 1
+  zoomSmoothing: 1
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0

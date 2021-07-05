@@ -97,13 +97,13 @@ public class GameController : MonoBehaviour
     {
         if(player == PlayerIndex.One)
         {
-            _playerOneVictoryText.DOFade(1f, 2f);
+            _playerTwoVictoryText.DOFade(1f, 2f);
             _playerOne.NonMeleeEndgameEffect(false);
             _playerTwo.NonMeleeEndgameEffect(true);
         }
         else if(player == PlayerIndex.Two)
         {
-            _playerTwoVictoryText.DOFade(1f, 2f);
+            _playerOneVictoryText.DOFade(1f, 2f);
             _playerOne.NonMeleeEndgameEffect(true);
             _playerTwo.NonMeleeEndgameEffect(false);
         }

@@ -20,12 +20,12 @@ public class AnimationController : MonoBehaviour
 
     private bool _landingComplete;
 
-    public Color startColor;
+    public PlayerIndex player;
+
 
     // Used to initialize the script
     void Start()
     {
-        startColor = _mySpriteRenderer.color;
         EnterIdleState();
     }
 

@@ -7,15 +7,34 @@ using UnityEditor.Animations;
 using UnityEditor;
 
 public enum PlayerIndex { One, Two }
-public class GameController : MonoBehaviour
+
+public interface IGameController
+{
+    public CharacterController _playerOne { get; set; }
+    public CharacterController _playerTwo { get; set; }
+    public void KillPlayer(PlayerIndex player);
+    public void MeleeKillPlayer(PlayerIndex player);
+}
+public class GameController : MonoBehaviour, IGameController
 {
 
     public Camera _mainCamera;
     public GameObject _platformContainer;
-    public CharacterController _playerOne;
+    [SerializeField]
+    private CharacterController player1;
+    public CharacterController _playerOne{
+        get { return player1; }
+        set { player1 = value; }
+    }
     public Color _playerOneBackground;
     public TextMeshPro _playerOneVictoryText;
-    public CharacterController _playerTwo;
+
+    [SerializeField]
+    private CharacterController player2;
+    public CharacterController _playerTwo { 
+        get { return player2; }
+        set { player2 = value; }
+    }
     public Color _playerTwoBackground;
     public TextMeshPro _playerTwoVictoryText;
     public AudioSource _audioPlayer;
@@ -30,9 +49,12 @@ public class GameController : MonoBehaviour
     private GameObject oldPos;
     public GameObject switcher;
     public GameObject arrow;
+
+    public GameObject pauseMenu;
+    private bool paused  = false;
+    public Vector3 player1PauseVelocity;
+    public Vector3 player2PauseVelocity;
     
-    private float _gameTimer;
-    private bool _gameOngoing;
     private List<GameObject> spawnpoints = new List<GameObject>();
 
     private Vector3 playerScale = new Vector3(5f, 4.25f, 1f); 
@@ -40,9 +62,11 @@ public class GameController : MonoBehaviour
     // Used to initialize the script
     void Start()
     {
-        _gameTimer = _timePerActivePlayer;
-        _gameOngoing = true;
+        _playerOneBackground = ColorManager.player1Background;
+        _playerTwoBackground = ColorManager.player2Background;
 
+        _playerOne._animationController._mySpriteRenderer.color = ColorManager.player1Color;
+        _playerTwo._animationController._mySpriteRenderer.color = ColorManager.player2Color;
 
         foreach(Transform child in spawnpointParent.transform)
         {
@@ -56,20 +80,20 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*
-        if (_gameOngoing)
-        {
-            _gameTimer -= Time.deltaTime;
-            if (_gameTimer <= 0)
-            {
-                SwitchActivePlayer();
-                _gameTimer = _timePerActivePlayer;
-            }
-        } */
-
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetStage();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!paused)
+            {
+                PauseGame();
+            }
+            else
+            {
+                UnPauseGame();
+            }
         }
     }
 
@@ -111,7 +135,25 @@ public class GameController : MonoBehaviour
         _mainCamera.DOColor(Color.black, 1f).SetEase(Ease.Linear);
         _audioPlayer.PlayOneShot(_gameOverSound);
 
-        _gameOngoing = false;
+    }
+
+    public void MeleeKillPlayer(PlayerIndex player)
+    {
+        if (player == PlayerIndex.One)
+        {
+            _playerTwo.ShowEndgameEffect(winner: false, _playerOne.transform.position);
+            _playerOne.ShowEndgameEffect(winner: true, _playerTwo.transform.position);
+            _playerOneVictoryText.DOFade(1f, 2f);
+        }
+        else
+        {
+            _playerOne.ShowEndgameEffect(winner: false, _playerTwo.transform.position);
+            _playerTwo.ShowEndgameEffect(winner: true, _playerOne.transform.position);
+            _playerTwoVictoryText.DOFade(1f, 2f);
+        }
+        _platformContainer.SetActive(false);
+        _mainCamera.DOColor(Color.black, 1f).SetEase(Ease.Linear);
+        _audioPlayer.PlayOneShot(_gameOverSound);
     }
 
     public void OnPlayersTouched()
@@ -131,8 +173,6 @@ public class GameController : MonoBehaviour
         _platformContainer.SetActive(false);
         _mainCamera.DOColor(Color.black, 1f).SetEase(Ease.Linear);
         _audioPlayer.PlayOneShot(_gameOverSound);
-
-        _gameOngoing = false;
     }
 
     void SwitchActivePlayer()
@@ -141,9 +181,9 @@ public class GameController : MonoBehaviour
         //switcher.GetComponent<SpriteRenderer>().color = _currentPlayer == PlayerIndex.One ? Color.blue : Color.red ; <= better & cooler
         if (_currentPlayer == PlayerIndex.One)
         {
-            switcher.GetComponent<SpriteRenderer>().color = Color.blue;
-            arrow.GetComponent<SpriteRenderer>().color = Color.blue;
-            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("Glow Color", Color.blue);
+            switcher.GetComponent<SpriteRenderer>().color = ColorManager.player1Color;
+            arrow.GetComponent<SpriteRenderer>().color = ColorManager.player1Color;
+            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("_GlowColor", Color.blue);
             _mainCamera.backgroundColor = _playerTwoBackground;
             _currentPlayer = PlayerIndex.Two;
             _audioPlayer.Stop();
@@ -151,9 +191,9 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            switcher.GetComponent<SpriteRenderer>().color = Color.red;
-            arrow.GetComponent<SpriteRenderer>().color = Color.red;
-            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("Glow Color", Color.red);
+            switcher.GetComponent<SpriteRenderer>().color = ColorManager.player2Color;
+            arrow.GetComponent<SpriteRenderer>().color = ColorManager.player2Color;
+            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("_GlowColor", Color.red);
             _mainCamera.backgroundColor = _playerOneBackground;
             _currentPlayer = PlayerIndex.One;
             _audioPlayer.Stop();
@@ -161,14 +201,37 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void ResetStage()
+    public void PauseGame()
     {
+        player1PauseVelocity = _playerOne._myRigidbody2D.velocity;
+        player2PauseVelocity = _playerTwo._myRigidbody2D.velocity;
+        _playerOne.DeactivateCharacter();
+        _playerTwo.DeactivateCharacter();
+        pauseMenu.SetActive(true);
+        paused = true;
+    }
+
+    public void UnPauseGame()
+    {
+        _playerOne.enabled = true;
+        _playerTwo.enabled = true;
+        _playerOne._myRigidbody2D.isKinematic = false;
+        _playerTwo._myRigidbody2D.isKinematic = false;
+        pauseMenu.SetActive(false);
+        paused = false;
+        _playerOne._myRigidbody2D.velocity = player1PauseVelocity;
+        _playerTwo._myRigidbody2D.velocity = player2PauseVelocity;
+    }
+
+    public void ResetStage()
+    {
+        UnPauseGame();
+
         _playerOneVictoryText.DOKill();
         _playerTwoVictoryText.DOKill();
         _playerOneVictoryText.alpha = 0;
         _playerTwoVictoryText.alpha = 0;
         _mainCamera.DOKill();
-        _gameOngoing = true;
 
         _playerOne.enabled = true;
         _playerTwo.enabled = true;
@@ -181,8 +244,8 @@ public class GameController : MonoBehaviour
         playerTwoAnimator.playerFade.Kill();
         playerOneAnimator._attackTrail.SetActive(false);
         playerTwoAnimator._attackTrail.SetActive(false);
-        playerOneAnimator._mySpriteRenderer.color = playerOneAnimator.startColor;
-        playerTwoAnimator._mySpriteRenderer.color = playerTwoAnimator.startColor;
+        playerOneAnimator._mySpriteRenderer.color = ColorManager.player1Color;
+        playerTwoAnimator._mySpriteRenderer.color = ColorManager.player2Color;
         playerOneAnimator._mySpriteRenderer.gameObject.transform.localScale = playerScale;
         playerTwoAnimator._mySpriteRenderer.gameObject.transform.localScale = playerScale;
 

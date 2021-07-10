@@ -66,7 +66,7 @@ public class CharacterController : MonoBehaviour
         DeactivateCharacter();
     }
 
-    private void DeactivateCharacter()
+    public void DeactivateCharacter()
     {
         _myRigidbody2D.velocity = Vector2.zero;
         _myRigidbody2D.isKinematic = true;
@@ -193,11 +193,6 @@ public class CharacterController : MonoBehaviour
 
     void ApplyVerticalMovement(bool jump)
     {
-        // Check if character has fallen
-        if (transform.position.y < _bottomOfScreen)
-        {
-            transform.position = new Vector2(transform.position.x, _topOfScreen);
-        }
 
         // If the player should jump...
         if ((_grounded || lastGrounded > 1) && jump)

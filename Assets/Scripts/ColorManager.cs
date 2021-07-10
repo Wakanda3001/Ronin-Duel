@@ -5,39 +5,22 @@ using TMPro;
 
 public class ColorManager : MonoBehaviour
 {
-    public TMP_InputField red;
-    public TMP_InputField blue;
-    public TMP_InputField green;
-    [SerializeField]
-    int redI = 0;
-    [SerializeField]
-    int blueI = 0;
-    [SerializeField]
-    int greenI = 0;
+    public static Color player1Default = new Color(26f/255f, 156f/255f, 217f/255f, 1);
+    public static Color player2Default = new Color(255f/255f, 90f/255f, 64f/255f, 1);
 
-    public static Color player1Color;
-    public static Color player2Color;
+    public static Color player1Color = player1Default;
+    public static Color player2Color = player2Default;
+    public static Color player1Background = new Color(32f / 255f, 54f / 255f, 64f / 255f, 1);
+    public static Color player2Background = new Color(64 / 255f, 36 / 255f, 32 / 255f, 1);
 
-    float H;
-    float S;
-    float V;
-
-    public PlayerIndex player;
-
-    private void Update()
+    public static void ResetColors()
     {
-        int.TryParse(red.text, out redI);
-        int.TryParse(blue.text, out blueI);
-        int.TryParse(green.text, out greenI);
-
-        if(player == PlayerIndex.One)
-        {
-            //Color.RGBToHSV(player1Color, out H, out S, out V); use hsv for better control over colors
-            player1Color = new Color32((byte)redI, (byte)blueI, (byte)greenI, 255);
-        }
-        else
-        {
-            player2Color = new Color32((byte)redI, (byte)blueI, (byte)greenI, 255);
-        }
+        player1Color = player1Default;
+        player2Color = player2Default;
+        float H, S, V;
+        Color.RGBToHSV(player1Default, out H, out S, out V);
+        player1Background = Color.HSVToRGB(H, 0.5f, 0.25f);
+        Color.RGBToHSV(player2Default, out H, out S, out V);
+        player2Background = Color.HSVToRGB(H, 0.5f, 0.25f);
     }
 }

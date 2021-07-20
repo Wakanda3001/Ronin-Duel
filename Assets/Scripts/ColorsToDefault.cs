@@ -6,6 +6,6 @@ public class ColorsToDefault : MonoBehaviour
 {
     private void OnMouseDown()
     {
-        ColorManager.ResetColors();
+        ColorManager.instance.ResetColors();
     }
 }

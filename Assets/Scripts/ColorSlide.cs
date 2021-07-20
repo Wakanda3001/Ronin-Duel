@@ -29,13 +29,13 @@ public class ColorSlide : MonoBehaviour
     {
         if(player == PlayerIndex.One)
         {
-            ColorManager.player1Color = Color.HSVToRGB(hueSlider.value, 1, 1);
-            ColorManager.player1Background = Color.HSVToRGB(hueSlider.value, 0.5f, 0.25f);
+            ColorManager.ChangeColor(PlayerIndex.One, Color.HSVToRGB(hueSlider.value, 1, 1));
+            ColorManager.ChangeBackground(PlayerIndex.One, Color.HSVToRGB(hueSlider.value, 0.5f, 0.25f));
         }
         else
         {
-            ColorManager.player2Color = Color.HSVToRGB(hueSlider.value, 1, 1);
-            ColorManager.player2Background = Color.HSVToRGB(hueSlider.value, 0.5f, 0.25f);
+            ColorManager.ChangeColor(PlayerIndex.Two, Color.HSVToRGB(hueSlider.value, 1, 1));
+            ColorManager.ChangeBackground(PlayerIndex.Two, Color.HSVToRGB(hueSlider.value, 0.5f, 0.25f));
         }
     }
 }

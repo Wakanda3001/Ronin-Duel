@@ -21,6 +21,7 @@ public class AnimationController : MonoBehaviour
     private bool _landingComplete;
 
     public PlayerIndex player;
+    private Vector3 playerScale = new Vector3(5f, 4.25f, 1f);
 
 
     // Used to initialize the script
@@ -176,5 +177,20 @@ public class AnimationController : MonoBehaviour
         _bobAnimation.OnComplete(() => _landingComplete = true);
 
         _state = State.MovingLanding;
+    }
+
+    public void Cleanup()
+    {
+        playerFade.Kill();
+        _attackTrail.SetActive(false);
+        if(player == PlayerIndex.One)
+        {
+            _mySpriteRenderer.color = ColorManager.player1Color;
+        }
+        else
+        {
+            _mySpriteRenderer.color = ColorManager.player2Color;
+        }
+        _mySpriteRenderer.gameObject.transform.localScale = playerScale;
     }
 }

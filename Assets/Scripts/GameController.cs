@@ -57,8 +57,6 @@ public class GameController : MonoBehaviour, IGameController
     
     private List<GameObject> spawnpoints = new List<GameObject>();
 
-    private Vector3 playerScale = new Vector3(5f, 4.25f, 1f); 
-
     // Used to initialize the script
     void Start()
     {
@@ -223,36 +221,33 @@ public class GameController : MonoBehaviour, IGameController
         _playerTwo._myRigidbody2D.velocity = player2PauseVelocity;
     }
 
-    public void ResetStage()
+    public void Cleanup()
     {
-        UnPauseGame();
-
         _playerOneVictoryText.DOKill();
         _playerTwoVictoryText.DOKill();
         _playerOneVictoryText.alpha = 0;
         _playerTwoVictoryText.alpha = 0;
         _mainCamera.DOKill();
 
-        _playerOne.enabled = true;
-        _playerTwo.enabled = true;
-        _playerOne._myRigidbody2D.isKinematic = false;
-        _playerTwo._myRigidbody2D.isKinematic = false;
-
-        AnimationController playerOneAnimator = _playerOne._animationController;
-        AnimationController playerTwoAnimator = _playerTwo._animationController;
-        playerOneAnimator.playerFade.Kill();
-        playerTwoAnimator.playerFade.Kill();
-        playerOneAnimator._attackTrail.SetActive(false);
-        playerTwoAnimator._attackTrail.SetActive(false);
-        playerOneAnimator._mySpriteRenderer.color = ColorManager.player1Color;
-        playerTwoAnimator._mySpriteRenderer.color = ColorManager.player2Color;
-        playerOneAnimator._mySpriteRenderer.gameObject.transform.localScale = playerScale;
-        playerTwoAnimator._mySpriteRenderer.gameObject.transform.localScale = playerScale;
-
         _playerOne.transform.position = playerSpawns[0].transform.position;
         _playerTwo.transform.position = playerSpawns[1].transform.position;
 
         _platformContainer.SetActive(true);
+    }
+
+    public void ResetStage()
+    {
+        UnPauseGame();
+
+        Cleanup();
+
+        _playerOne.Cleanup();
+        _playerTwo.Cleanup();
+
+        _playerOne._animationController.Cleanup();
+        _playerTwo._animationController.Cleanup();
+
+        
         if(_currentPlayer == PlayerIndex.One)
         {
             SpawnSwitcher(PlayerIndex.Two);

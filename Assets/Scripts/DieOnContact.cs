@@ -9,7 +9,6 @@ public class DieOnContact : MonoBehaviour
     private void Start()
     {
         gameController = gameControllerObject.GetComponent(typeof(IGameController)) as IGameController;
-        Debug.Log(gameController);
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {

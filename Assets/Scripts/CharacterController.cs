@@ -60,6 +60,12 @@ public class CharacterController : MonoBehaviour
         DeactivateCharacter();
     }
 
+    public void Cleanup()
+    {
+        enabled = true;
+        _myRigidbody2D.isKinematic = false;
+    }
+
     public void NonMeleeEndgameEffect(bool winner)
     {
         _animationController.NonMeleeKill(winner);

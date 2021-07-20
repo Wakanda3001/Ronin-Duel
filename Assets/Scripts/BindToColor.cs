@@ -13,7 +13,7 @@ public class BindToColor : MonoBehaviour
     {
         if (ColorManager.player1Color.a == 0f || ColorManager.player2Color.a == 0f)
         {
-            ColorManager.ResetColors();
+            ColorManager.instance.ResetColors();
         }
     }
 

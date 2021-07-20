@@ -39,11 +39,11 @@ public class ColorNumbers : MonoBehaviour
 
         if (player == PlayerIndex.One)
         {
-            ColorManager.player1Color = new Color(redI / 255f, greenI / 255f, blueI / 255f, 255);
+            ColorManager.ChangeColor(PlayerIndex.One, new Color(redI / 255f, greenI / 255f, blueI / 255f, 255));
         }
         else
         {
-            ColorManager.player2Color = new Color(redI / 255f, greenI / 255f, blueI / 255f, 255);
+            ColorManager.ChangeColor(PlayerIndex.Two, new Color(redI / 255f, greenI / 255f, blueI / 255f, 255));
         }
     }
 }

@@ -4,12 +4,7 @@ using UnityEngine;
 
 public class DieOnContact : MonoBehaviour
 {
-    public GameObject gameControllerObject;
-    public IGameController gameController;
-    private void Start()
-    {
-        gameController = gameControllerObject.GetComponent(typeof(IGameController)) as IGameController;
-    }
+    public GameControllerBase gameController;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.GetComponent<CharacterController>())

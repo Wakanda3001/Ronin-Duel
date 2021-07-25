@@ -14,5 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/BounceStage.unity
     guid: 06929a0815931a44683b055113d99296
+  - enabled: 1
+    path: Assets/_Scenes/Climber.unity
+    guid: 6a7ecf6f3d62dbe41ba0b34dc788bf26
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: f4cdf0083c1d3d9409ad27477423cf41, type: 2}

@@ -39,6 +39,9 @@ public class ColorManager : MonoBehaviour
 
     public static void ChangeColor(PlayerIndex player, Color color)
     {
+        float H, S, V;
+        Color.RGBToHSV(color, out H, out S, out V);
+        color = Color.HSVToRGB(H, instance.hueToValue.Evaluate(H), V);
         if(player == PlayerIndex.One)
         {
             player1Color = color;

@@ -1034,7 +1034,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72ec50627b3fc14469d6b5b776692c6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameControllerObject: {fileID: 1366321676}
+  gameController: {fileID: 1928502096}
 --- !u!1 &331030525
 GameObject:
   m_ObjectHideFlags: 0
@@ -2731,6 +2731,73 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3040175028425811522, guid: 5b0cc779f2f13c742aa753ff2088438c, type: 3}
   m_PrefabInstance: {fileID: 3040175028664271379}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &758443779
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 758443781}
+  - component: {fileID: 758443780}
+  m_Layer: 0
+  m_Name: ColorManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &758443780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758443779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07f72ecec2ff8134497b3b045c05bb68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hueToValue:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &758443781
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758443779}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15.905894, y: 13.718998, z: -18.539444}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &773200721
 GameObject:
   m_ObjectHideFlags: 0
@@ -4003,11 +4070,6 @@ Transform:
   m_Father: {fileID: 67105290}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1366321676 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8965640344833452090, guid: c2cd23cb39204ca4abf871bfff6e15f6, type: 3}
-  m_PrefabInstance: {fileID: 8965640344591397748}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1375560038
 GameObject:
   m_ObjectHideFlags: 0
@@ -5144,7 +5206,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8965640344833452068, guid: c2cd23cb39204ca4abf871bfff6e15f6, type: 3}
   m_PrefabInstance: {fileID: 8965640344591397748}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1366321676}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c409be5aece40fa47b6560bf2054dffb, type: 3}
@@ -7082,6 +7144,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharacterController1
       objectReference: {fileID: 0}
+    - target: {fileID: 3459913207101100855, guid: c267b0b92ee06174ca75bdf828b133dd, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c267b0b92ee06174ca75bdf828b133dd, type: 3}
 --- !u!1001 &4110662367136087578
@@ -7215,6 +7281,10 @@ PrefabInstance:
     - target: {fileID: 5581114791109248889, guid: 2c79923650fe0884abbf17b02e93b3a8, type: 3}
       propertyPath: m_Name
       value: CharacterController2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5581114791109248890, guid: 2c79923650fe0884abbf17b02e93b3a8, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5581114791579092895, guid: 2c79923650fe0884abbf17b02e93b3a8, type: 3}
       propertyPath: m_Materials.Array.data[0]

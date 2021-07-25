@@ -5,7 +5,7 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 
-public class ClimberGameController : MonoBehaviour, IGameController
+public class ClimberGameController : GameControllerBase
 {
     public List<GameObject> sets1_1;
     public List<GameObject> sets1_2;
@@ -25,45 +25,30 @@ public class ClimberGameController : MonoBehaviour, IGameController
     public List<GameObject> sets4_4;
 
     public List<GameObject>[,] allSets = new List<GameObject>[4, 4];
+    [SerializeField]
+    private GameObject generatedPlatforms;
 
     public float distanceBetween = 12f;
     
     public float player1x = 6f;
     public float player2x = -6f;
-    public float currentDistance = 10f;
+    public float currentDistance = -2f;
     public int startingPos = 1;
     private int currentPos = 1;
 
     public float loadDistance = 30f;
     private float highestPoint = 0f;
 
-    [SerializeField]
-    private CharacterController player1;
-    public CharacterController _playerOne
-    {
-        get { return player1; }
-        set { player1 = value; }
-    }
-    [SerializeField]
-    private CharacterController player2;
-    public CharacterController _playerTwo
-    {
-        get { return player2; }
-        set { player2 = value; }
-    }
+    public float midline = 0f;
+
     public GameObject deathwall;
     public float wallDelay = 20f;
+    public float wallSmoothing = 1f;
 
-    public TextMeshPro _playerOneVictoryText;
-    public TextMeshPro _playerTwoVictoryText;
-    public GameObject _platformContainer;
-    public AudioSource _audioPlayer;
-    public AudioClip _switchSound1;
-    public AudioClip _switchSound2;
-    public AudioClip _gameOverSound;
-
-    private void Start()
+    protected override void Start()
     {
+
+        base.Start();
         allSets[0, 0] = sets1_1;
         allSets[0, 1] = sets1_2;
         allSets[0, 2] = sets1_3;
@@ -81,10 +66,8 @@ public class ClimberGameController : MonoBehaviour, IGameController
         allSets[3, 2] = sets4_3;
         allSets[3, 3] = sets4_4;
 
-        _playerOne._animationController._mySpriteRenderer.color = ColorManager.player1Color;
-        _playerTwo._animationController._mySpriteRenderer.color = ColorManager.player2Color;
-
     }
+
 
     public void UpdateOnCameraPos()
     {
@@ -95,8 +78,16 @@ public class ClimberGameController : MonoBehaviour, IGameController
         float higherPlayer = Mathf.Max(_playerOne.transform.position.y, _playerTwo.transform.position.y);
         highestPoint = Mathf.Max(highestPoint, higherPlayer);
 
-        deathwall.transform.position = new Vector3(deathwall.transform.position.x, highestPoint - wallDelay, deathwall.transform.position.z);
+        float newY = Mathf.Lerp(deathwall.transform.position.y, highestPoint - wallDelay, wallSmoothing * Time.deltaTime);
 
+        deathwall.transform.position = new Vector3(deathwall.transform.position.x, newY, deathwall.transform.position.z);
+
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        UpdateOnCameraPos();
     }
     public int[] generatePath(int pos)
     {
@@ -145,58 +136,52 @@ public class ClimberGameController : MonoBehaviour, IGameController
         List<GameObject> set = allSets[path[0] - 1, path[1] - 1];
         int randList = Random.Range(0, set.Count);
         GameObject chunk = set[randList];
-        Instantiate(chunk, new Vector3(player1x, y), Quaternion.identity, _platformContainer.transform);
-        GameObject player2Tower = Instantiate(chunk, new Vector3(player2x, y), Quaternion.identity, _platformContainer.transform);
+        Instantiate(chunk, new Vector3(player1x, y), Quaternion.identity, generatedPlatforms.transform);
+        GameObject player2Tower = Instantiate(chunk, new Vector3(player2x, y), Quaternion.identity, generatedPlatforms.transform);
         player2Tower.transform.localScale = new Vector3(-player2Tower.transform.localScale.x, player2Tower.transform.localScale.y, player2Tower.transform.localScale.z);
         currentPos = path[1];
         currentDistance+=distanceBetween;
     }
-
-    private void Update()
+    public override void KillPlayer(PlayerIndex player)
     {
-        UpdateOnCameraPos();
-        if (Input.GetKeyDown(KeyCode.G))
+        base.KillPlayer(player);
+        foreach (Transform platform in generatedPlatforms.transform)
         {
-            loadNextChunk();
+            Destroy(platform.gameObject);
+        }
+    }
+    public override void MeleeKillPlayer(PlayerIndex player)
+    {
+        base.MeleeKillPlayer(player);
+        foreach (Transform platform in generatedPlatforms.transform)
+        {
+            Destroy(platform.gameObject);
         }
     }
 
-    public void KillPlayer(PlayerIndex player)
+    public override void Cleanup()
     {
-        if (player == PlayerIndex.One)
-        {
-            _playerTwoVictoryText.DOFade(1f, 2f);
-            _playerOne.NonMeleeEndgameEffect(false);
-            _playerTwo.NonMeleeEndgameEffect(true);
-        }
-        else if (player == PlayerIndex.Two)
-        {
-            _playerOneVictoryText.DOFade(1f, 2f);
-            _playerOne.NonMeleeEndgameEffect(true);
-            _playerTwo.NonMeleeEndgameEffect(false);
-        }
-        _platformContainer.SetActive(false);
-        Camera.main.DOColor(Color.black, 1f).SetEase(Ease.Linear);
-        _audioPlayer.PlayOneShot(_gameOverSound);
+        base.Cleanup();
 
+        foreach(Transform platform in generatedPlatforms.transform)
+        {
+            Destroy(platform.gameObject);
+        }
+
+        currentDistance = -2f;
+        currentPos = 1;
+        highestPoint = 0f;
     }
 
-    public void MeleeKillPlayer(PlayerIndex player)
+    public void OnPlayersTouched()
     {
-        if (player == PlayerIndex.One)
+        if(player1.transform.position.x > midline && player2.transform.position.x > midline)
         {
-            _playerTwo.ShowEndgameEffect(winner: false, _playerOne.transform.position);
-            _playerOne.ShowEndgameEffect(winner: true, _playerTwo.transform.position);
-            _playerOneVictoryText.DOFade(1f, 2f);
+            MeleeKillPlayer(PlayerIndex.One);
         }
-        else
+        else if(player1.transform.position.x < midline && player2.transform.position.x < midline)
         {
-            _playerOne.ShowEndgameEffect(winner: false, _playerTwo.transform.position);
-            _playerTwo.ShowEndgameEffect(winner: true, _playerOne.transform.position);
-            _playerTwoVictoryText.DOFade(1f, 2f);
+            MeleeKillPlayer(PlayerIndex.Two);
         }
-        _platformContainer.SetActive(false);
-        Camera.main.DOColor(Color.black, 1f).SetEase(Ease.Linear);
-        _audioPlayer.PlayOneShot(_gameOverSound);
     }
 }

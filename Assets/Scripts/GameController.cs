@@ -74,15 +74,23 @@ public class GameController : GameControllerBase
         _audioPlayer.PlayOneShot(_gameOverSound);
     }
 
+    Color ReduceToHue(Color color)
+    {
+        float H, S, V;
+        Color.RGBToHSV(color, out H, out S, out V);
+        return Color.HSVToRGB(H, 1f, 1f);
+    }
+
     void SwitchActivePlayer()
     {
 
         //switcher.GetComponent<SpriteRenderer>().color = _currentPlayer == PlayerIndex.One ? Color.blue : Color.red ; <= better & cooler
         if (_currentPlayer == PlayerIndex.One)
         {
-            switcher.GetComponent<SpriteRenderer>().color = ColorManager.player1Color;
+            switcher.GetComponent<SpriteRenderer>().color = ReduceToHue(ColorManager.player1Color);
             arrow.GetComponent<SpriteRenderer>().color = ColorManager.player1Color;
-            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("_GlowColor", Color.blue);
+            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("_GlowColor", ReduceToHue(ColorManager.player1Color));
+            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("_Color", ReduceToHue(ColorManager.player1Color));
             _mainCamera.backgroundColor = _playerTwoBackground;
             _currentPlayer = PlayerIndex.Two;
             _audioPlayer.Stop();
@@ -90,9 +98,10 @@ public class GameController : GameControllerBase
         }
         else
         {
-            switcher.GetComponent<SpriteRenderer>().color = ColorManager.player2Color;
+            switcher.GetComponent<SpriteRenderer>().color = ReduceToHue(ColorManager.player2Color);
             arrow.GetComponent<SpriteRenderer>().color = ColorManager.player2Color;
-            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("_GlowColor", Color.red);
+            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("_GlowColor", ReduceToHue(ColorManager.player2Color));
+            switcher.GetComponent<Renderer>().sharedMaterial.SetColor("_Color", ReduceToHue(ColorManager.player2Color));
             _mainCamera.backgroundColor = _playerOneBackground;
             _currentPlayer = PlayerIndex.One;
             _audioPlayer.Stop();

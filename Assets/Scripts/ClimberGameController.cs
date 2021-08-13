@@ -4,27 +4,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using System;
 
 public class ClimberGameController : GameControllerBase
 {
-    public List<GameObject> sets1_1;
-    public List<GameObject> sets1_2;
-    public List<GameObject> sets1_3;
-    public List<GameObject> sets1_4;
-    public List<GameObject> sets2_1;
-    public List<GameObject> sets2_2;
-    public List<GameObject> sets2_3;
-    public List<GameObject> sets2_4;
-    public List<GameObject> sets3_1;
-    public List<GameObject> sets3_2;
-    public List<GameObject> sets3_3;
-    public List<GameObject> sets3_4;
-    public List<GameObject> sets4_1;
-    public List<GameObject> sets4_2;
-    public List<GameObject> sets4_3;
-    public List<GameObject> sets4_4;
 
-    public List<GameObject>[,] allSets = new List<GameObject>[4, 4];
+    [Serializable]
+    public class Set
+    {
+        public GameObject _gameObject;
+        public int start;
+        public int end;
+    }
+    public List<Set> sets;
+
+
     [SerializeField]
     private GameObject generatedPlatforms;
 
@@ -33,6 +27,8 @@ public class ClimberGameController : GameControllerBase
     public float player1x = 6f;
     public float player2x = -6f;
     public float currentDistance = -2f;
+    private int stackHeight = 0;
+    public int powerupFrequency = 3;
     public int startingPos = 1;
     private int currentPos = 1;
 
@@ -45,28 +41,12 @@ public class ClimberGameController : GameControllerBase
     public float wallDelay = 20f;
     public float wallSmoothing = 1f;
 
-    protected override void Start()
-    {
-
-        base.Start();
-        allSets[0, 0] = sets1_1;
-        allSets[0, 1] = sets1_2;
-        allSets[0, 2] = sets1_3;
-        allSets[0, 3] = sets1_4;
-        allSets[1, 0] = sets2_1;
-        allSets[1, 1] = sets2_2;
-        allSets[1, 2] = sets2_3;
-        allSets[1, 3] = sets2_4;
-        allSets[2, 0] = sets3_1;
-        allSets[2, 1] = sets3_2;
-        allSets[2, 2] = sets3_3;
-        allSets[2, 3] = sets3_4;
-        allSets[3, 0] = sets4_1;
-        allSets[3, 1] = sets4_2;
-        allSets[3, 2] = sets4_3;
-        allSets[3, 3] = sets4_4;
-
-    }
+    public GameObject powerup;
+    public GameObject player1Background;
+    public GameObject player2Background;
+    public float powerupLength = 5f;
+    bool isPlayerPowered = false;
+    PlayerIndex poweredPlayer = PlayerIndex.One;
 
 
     public void UpdateOnCameraPos()
@@ -91,56 +71,67 @@ public class ClimberGameController : GameControllerBase
     }
     public int[] generatePath(int pos)
     {
-        int rand = Random.Range(1, 5);
-        int coinFlip = Random.Range(1, 3);
+        int rand = UnityEngine.Random.Range(1, 5);
+        int coinFlip = UnityEngine.Random.Range(1, 3);
         int nextPos = pos;
-
-        /* Alternate setup that starts new path adjacent to where the last one ended, requires different design for the chunks
-        if(pos == 1)
-        {
-            nextPos = 2;
-        }
-        else if (pos == 2)
-        {
-            if(coinFlip == 1)
-            {
-                nextPos = 1;
-            }
-            else
-            {
-                nextPos = 3;
-            }
-        }
-        else if (pos == 3)
-        {
-            if (coinFlip == 1)
-            {
-                nextPos = 2;
-            }
-            else
-            {
-                nextPos = 4;
-            }
-        }
-        else
-        {
-            nextPos = 3;
-        } */ 
 
         return new int[] { nextPos, rand };
     }
+
+    Color ReduceToHue(Color color)
+    {
+        float H, S, V;
+        Color.RGBToHSV(color, out H, out S, out V);
+        return Color.HSVToRGB(H, 1f, 1f);
+    }
+
     public void loadNextChunk()
     {
         float y = currentDistance + distanceBetween;
         int[] path = generatePath(currentPos);
-        List<GameObject> set = allSets[path[0] - 1, path[1] - 1];
-        int randList = Random.Range(0, set.Count);
-        GameObject chunk = set[randList];
-        Instantiate(chunk, new Vector3(player1x, y), Quaternion.identity, generatedPlatforms.transform);
+        List<GameObject> fittingSets = new List<GameObject>();
+        foreach(Set localSet in sets)
+        {
+            if(localSet.start == path[0] && localSet.end == path[1])
+            {
+                fittingSets.Add(localSet._gameObject);
+            }
+        }
+        int randList = UnityEngine.Random.Range(0, fittingSets.Count);
+        GameObject chunk = fittingSets[randList];
+        GameObject player1Tower = Instantiate(chunk, new Vector3(player1x, y), Quaternion.identity, generatedPlatforms.transform);
         GameObject player2Tower = Instantiate(chunk, new Vector3(player2x, y), Quaternion.identity, generatedPlatforms.transform);
         player2Tower.transform.localScale = new Vector3(-player2Tower.transform.localScale.x, player2Tower.transform.localScale.y, player2Tower.transform.localScale.z);
+        if(stackHeight % powerupFrequency == 0)
+        {
+            GameObject player1Spawnpoint = powerup;
+            GameObject player2Spawnpoint = powerup;
+            foreach (Transform element in player1Tower.transform)
+            {
+                if (element.name == "spawnpoint")
+                {
+                    player1Spawnpoint = element.gameObject;
+                }
+            }
+            foreach (Transform element in player2Tower.transform)
+            {
+                if (element.name == "spawnpoint")
+                {
+                    player2Spawnpoint = element.gameObject;
+                }
+            }
+            GameObject p1Powerup = Instantiate(powerup, player2Spawnpoint.transform);
+            p1Powerup.GetComponent<SpriteRenderer>().color = ReduceToHue(ColorManager.player1Color);
+            p1Powerup.GetComponent<Renderer>().material.SetColor("_GlowColor", ReduceToHue(ColorManager.player1Color));
+            p1Powerup.GetComponent<Renderer>().material.SetColor("_Color", ReduceToHue(ColorManager.player1Color));
+            GameObject p2Powerup = Instantiate(powerup, player1Spawnpoint.transform);
+            p2Powerup.GetComponent<SpriteRenderer>().color = ReduceToHue(ColorManager.player2Color);
+            p2Powerup.GetComponent<Renderer>().material.SetColor("_GlowColor", ReduceToHue(ColorManager.player2Color));
+            p2Powerup.GetComponent<Renderer>().material.SetColor("_Color", ReduceToHue(ColorManager.player2Color));
+        }
         currentPos = path[1];
         currentDistance+=distanceBetween;
+        stackHeight++;
     }
     public override void KillPlayer(PlayerIndex player)
     {
@@ -171,17 +162,69 @@ public class ClimberGameController : GameControllerBase
         currentDistance = -2f;
         currentPos = 1;
         highestPoint = 0f;
+        stackHeight = 0;
+        isPlayerPowered = false;
+        player1Background.GetComponent<BindToColor>().enabled = true;
+        player2Background.GetComponent<BindToColor>().enabled = true;
     }
 
     public void OnPlayersTouched()
     {
-        if(player1.transform.position.x > midline && player2.transform.position.x > midline)
+        if (isPlayerPowered)
         {
-            MeleeKillPlayer(PlayerIndex.One);
+            if(poweredPlayer == PlayerIndex.One)
+            {
+                MeleeKillPlayer(PlayerIndex.One);
+            }
+            else
+            {
+                MeleeKillPlayer(PlayerIndex.Two);
+            }
         }
-        else if(player1.transform.position.x < midline && player2.transform.position.x < midline)
+        else
         {
-            MeleeKillPlayer(PlayerIndex.Two);
+            if (player1.transform.position.x > midline && player2.transform.position.x > midline)
+            {
+                MeleeKillPlayer(PlayerIndex.One);
+            }
+            else if (player1.transform.position.x < midline && player2.transform.position.x < midline)
+            {
+                MeleeKillPlayer(PlayerIndex.Two);
+            }
         }
+    }
+
+    List<Coroutine> PowerupEndCoroutines = new List<Coroutine>();
+    public void PowerUpEffect(PlayerIndex player)
+    {
+        player1Background.GetComponent<BindToColor>().enabled = false;
+        player2Background.GetComponent<BindToColor>().enabled = false;
+        foreach (Coroutine coroutine in PowerupEndCoroutines)
+        {
+            StopCoroutine(coroutine);
+        }
+        isPlayerPowered = true;
+        if(player == PlayerIndex.One)
+        {
+            player2Background.GetComponent<SpriteRenderer>().color = ColorManager.player1Background;
+            player1Background.GetComponent<SpriteRenderer>().color = ColorManager.player1Background;
+            poweredPlayer = PlayerIndex.One;
+        }
+        else
+        {
+            player2Background.GetComponent<SpriteRenderer>().color = ColorManager.player2Background;
+            player1Background.GetComponent<SpriteRenderer>().color = ColorManager.player2Background;
+            poweredPlayer = PlayerIndex.Two;
+        }
+        PowerupEndCoroutines.Add(StartCoroutine(EndPowerup()));
+        
+    }
+
+    IEnumerator EndPowerup()
+    {
+        yield return new WaitForSeconds(powerupLength);
+        player1Background.GetComponent<SpriteRenderer>().color = ColorManager.player1Background;
+        player2Background.GetComponent<SpriteRenderer>().color = ColorManager.player2Background;
+        isPlayerPowered = false;
     }
 }

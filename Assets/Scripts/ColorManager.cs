@@ -31,10 +31,10 @@ public class ColorManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
 
-        ChangeColor(PlayerIndex.One, player1Default);
-        ChangeColor(PlayerIndex.Two, player2Default);
-        ChangeBackground(PlayerIndex.One, player1Background);
-        ChangeBackground(PlayerIndex.Two, player2Background);
+        if (player1Color.a == 0)
+        {
+            ResetColors();
+        }
     }
 
     public static void ChangeColor(PlayerIndex player, Color color)

@@ -39,6 +39,10 @@ public class AnimationController : MonoBehaviour
         {
             _attackTrail.transform.right = trailFacing;
             _attackTrail.SetActive(true);
+            if(playerFade != null)
+            {
+                playerFade.Kill();
+            }
             playerFade = DOTween.Sequence();
             playerFade.Append(_mySpriteRenderer.transform.DOScaleY(0f, 3f).SetEase(Ease.InQuad));
             playerFade.Join(_mySpriteRenderer.DOColor(Color.white, 1f).SetEase(Ease.Linear));

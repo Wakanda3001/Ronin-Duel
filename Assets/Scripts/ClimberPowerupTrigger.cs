@@ -1,14 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-[System.Serializable]
-public class IndexUnityEvent : UnityEvent<PlayerIndex> { }
-public class PlayerDependentTrigger : MonoBehaviour
+public class ClimberPowerupTrigger : MonoBehaviour
 {
     public IndexUnityEvent OnTriggerActivated;
-    public GameControllerBase gameController;
+    public ClimberGameController gameController;
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -30,7 +27,9 @@ public class PlayerDependentTrigger : MonoBehaviour
         {
             return;
         }
+        if((playerNum == PlayerIndex.One && transform.position.x > gameController.midline) || (playerNum == PlayerIndex.Two && transform.position.x < gameController.midline)) { return; }
 
         OnTriggerActivated?.Invoke(playerNum);
+        Destroy(gameObject);
     }
 }
